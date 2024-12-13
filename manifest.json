@@ -12,6 +12,7 @@
         "*://*.stackoverflow.com/*"
       ],
       "js": [
+        "src/guesslang.min.js",
         "dist/content.js"
       ]
     }
