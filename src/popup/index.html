@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    @layer base {
+      html {
+        font-family: "Inter", system-ui, sans-serif;
+      }
+    }
+    @layer utilities {
+      .font-roboto {
+        font-family: "Roboto Mono", monospace;
+      }
+    }
+  </style>  
+  <title>Popup</title>
+</head>
+<body class="max-w-xl text-white bg-zinc-800">
+  <div id="header" class="mx-3 my-2 flex flex-col gap-1">
+    <h1 class="text-lg font-bold">Syntax Highlight</h1> 
+    <button class="text-xs text-start hover:bg-zinc-700 px-1 rounded flex gap-1 items-center" id="enabled">
+      Enabled 
+    </button>
+    <p id="current-theme" class="font-roboto text-xs font-bold"></p>
+  </div>
+  <hr class="border border-zinc-700" />
+  <div class="mx-3 my-2" id="content">
+    <p class="text-sm font-semibold my-2">Light</p>
+    <div class="flex flex-col mb-2" id="light-container"></div>
+    <p class="text-sm font-semibold my-2">Dark</p>
+    <div class="flex flex-col mb-2" id="dark-container"></div>
+  </div>
+  <script type="module" src="./index.js"></script>
+</body>
+</html>

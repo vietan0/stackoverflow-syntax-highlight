@@ -1,18 +1,4 @@
-import { codeToHtml, bundledLanguages } from 'shiki'
-
-function isDarkTheme() {
-  const classes = Array.from(document.body.classList);
-  if (classes.includes('theme-dark')) return true;
-  if (classes.includes('theme-dark__forced')) return true;
-  if (classes.includes('theme-light__forced')) return false;
-  if (classes.includes('theme-system')) {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return true;
-    }
-    return false;
-  }
-  return false;
-}
+import { bundledLanguages, codeToHtml } from 'shiki';
 
 /**
  * Change `<pre>`'s html to be syntax highlighted by Shiki
@@ -25,9 +11,18 @@ async function modifyHtml(lang, pre) {
     console.log(`Shiki doesn't recognize: ${lang}, fallback to 'plain'`);
   }
 
-  const html = await codeToHtml(pre.innerText, {
+  const { theme } = await browser.storage.local.get();
+
+  if (!theme) {
+    // if undefined (first time), set to dark-plus
+    await browser.storage.local.set({
+      theme: 'dark-plus',
+    });
+  }
+
+  const html = await codeToHtml(pre.textContent, {
     lang: lang in bundledLanguages ? lang : 'plain',
-    theme: isDarkTheme() ? 'dark-plus' : 'light-plus',
+    theme: theme || 'dark-plus',
   });
 
   pre.outerHTML = html;
@@ -38,15 +33,18 @@ async function modifyHtml(lang, pre) {
  *
  * If there's no guess, return false.
  * @param {HTMLElement} pre The `<pre>` element
- * @returns {boolean}
+ * @returns {boolean} Boolean
  */
 async function guessAndModify(pre) {
+  // eslint-disable-next-line no-undef
   const guessLang = new GuessLang();
-  const guesses = await guessLang.runModel(pre.innerText);
-  if (guesses.length === 0) return false;
+  const guesses = await guessLang.runModel(pre.textContent);
+  if (guesses.length === 0)
+    return false;
 
   const guessedLang = guesses[0].languageId;
   modifyHtml(guessedLang, pre);
+
   return true;
 }
 
@@ -65,32 +63,55 @@ function modify() {
 
         if (langExists) {
           const [lang] = langExists;
-          if (lang === 'none') { 
-            guessAndModify(pre); 
+
+          if (lang === 'none') {
+            guessAndModify(pre);
           }
-          else { 
-            modifyHtml(lang, pre); 
+          else {
+            modifyHtml(lang, pre);
           }
-        } else {
+        }
+        else {
           // no "lang-xxx" class but maybe it has "default" class
           guessAndModify(pre);
         }
       }
     }
-  };
+  }
 }
 
-function listenToThemeChange() {
-  const observer = new MutationObserver((mutationList) => {
-    for (const mutation of mutationList) {
-      if (mutation.type === "attributes" && mutation.attributeName === 'class') {
+async function handleChange(changes) {
+  const changedItems = Object.keys(changes);
+
+  for (const item of changedItems) {
+    if (item === 'theme') {
+      const { enabled } = await browser.storage.local.get();
+      if (enabled)
         modify();
-      }
     }
-  });
-  observer.observe(document.body, { attributes: true });
+
+    if (item === 'enabled') {
+      location.reload();
+    }
+  }
 }
 
-modify();
-listenToThemeChange();
+async function main() {
+  const { enabled } = await browser.storage.local.get();
 
+  if (enabled === undefined) {
+    // first time, should always be boolean
+    await browser.storage.local.set({
+      enabled: true,
+    });
+
+    modify();
+  }
+
+  if (enabled)
+    modify();
+
+  browser.storage.local.onChanged.addListener(handleChange);
+}
+
+main();
