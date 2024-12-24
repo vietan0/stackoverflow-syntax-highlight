@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../../icons/PhCodeDuotone.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    @layer base {
+      html {
+        font-family: "Inter", system-ui, sans-serif;
+      }
+    }
+    @layer utilities {
+      .font-roboto {
+        font-family: "Roboto Mono", monospace;
+      }
+    }
+  </style>  
+  <title>Extension Page</title>
+</head>
+<body class="text-white bg-zinc-800 p-4">
+  <h1 class="text-xl font-bold mb-4">Customize Font</h1>
+  <form class="flex flex-col gap-3 p-4 rounded text-sm w-[600px] outline outline-1 outline-zinc-400">
+    <label class="flex flex-col gap-0.5">
+      <p class="font-semibold">Font Family</p>
+      <input 
+      type="text" 
+      name="font-family"
+      class="text-white bg-zinc-700 font-roboto text-xs p-2 rounded" 
+      placeholder="Roboto Mono"
+      >
+    </label>
+    <label class="flex flex-col gap-0.5">
+      <p class="font-semibold">Import statement from Google Fonts 
+        <span class="font-normal text-zinc-400">(leave empty if installed locally)</span>
+      </p>
+      <textarea 
+      name="import-string"
+      rows="3"
+      class="text-white bg-zinc-700 font-roboto text-xs p-2 rounded resize-none" 
+      placeholder="@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap')"
+      ></textarea>
+    </label>
+    <div>
+      <button 
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-500 font-bold px-4 py-2 rounded self-start"
+        >
+        Save
+      </button>
+      <span id="save-msg" class="text-sm text-green-500 ml-2"></span>
+  </div>
+  </form>
+  <script type="module" src="./index.js"></script>
+</body>
+</html>

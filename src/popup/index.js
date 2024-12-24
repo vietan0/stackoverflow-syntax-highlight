@@ -6,7 +6,7 @@ async function renderBtns(themes, container) {
     btn.textContent = themes[i].name;
     btn.id = themes[i].id;
     const { theme } = await browser.storage.local.get();
-    const className = `block text-xs text-start font-roboto px-2 py-1.5 border-b-[1px] border-zinc-700 hover:bg-zinc-700`;
+    const className = `block text-xs text-start font-roboto px-2 py-1.5 border-b-[1px] border-zinc-700 hover:bg-zinc-700 active:bg-zinc-600`;
     btn.className = `${className} ${theme === themes[i].id && 'bg-zinc-600 font-bold'}`;
 
     async function handleClick() {
@@ -33,15 +33,21 @@ async function renderCurrentThemeName(theme) {
     currentThemeSpan.classList.add('opacity-40');
 }
 
-async function render() {
-  const { theme, enabled } = await browser.storage.local.get();
-  renderCurrentThemeName(theme);
+async function renderSwitch() {
+  const { enabled } = await browser.storage.local.get();
   const enabledBtn = document.getElementById('enabled');
   const switchIcon = document.createElement('img');
   switchIcon.id = 'switch';
   switchIcon.src = enabled ? './LineMdSwitchOffTwotoneToSwitchTwotoneTransition.svg' : './LineMdSwitchTwotoneToSwitchOffTwotoneTransition.svg';
   enabledBtn.textContent = enabled ? 'Enabled' : 'Disabled';
   enabledBtn.prepend(switchIcon);
+}
+
+async function render() {
+  const { theme } = await browser.storage.local.get();
+  renderCurrentThemeName(theme);
+  renderSwitch();
+  const enabledBtn = document.getElementById('enabled');
 
   enabledBtn.onclick = async () => {
     const { enabled } = await browser.storage.local.get();
@@ -49,6 +55,16 @@ async function render() {
     await browser.storage.local.set({
       enabled: !enabled,
     });
+  };
+
+  const extPageLink = document.getElementById('ext-page-link');
+
+  extPageLink.onclick = () => {
+    const createData = {
+      url: '../ext-page/index.html',
+    };
+
+    browser.tabs.create(createData);
   };
 
   renderBtns(lightThemes, document.getElementById('light-container'));
@@ -91,13 +107,7 @@ function handleChange(changes) {
       const newEnabled = changes[item].newValue;
       const oldSwitchIcon = document.getElementById('switch');
       oldSwitchIcon.remove();
-      const newSwitchIcon = document.createElement('img');
-      newSwitchIcon.id = 'switch';
-      newSwitchIcon.src = newEnabled ? './LineMdSwitchOffTwotoneToSwitchTwotoneTransition.svg' : './LineMdSwitchTwotoneToSwitchOffTwotoneTransition.svg';
-      const enabledBtn = document.getElementById('enabled');
-      enabledBtn.textContent = newEnabled ? 'Enabled' : 'Disabled';
-
-      enabledBtn.prepend(newSwitchIcon);
+      renderSwitch();
       const currentThemeSpan = document.getElementById('current-theme');
 
       if (newEnabled) {

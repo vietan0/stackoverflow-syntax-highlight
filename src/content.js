@@ -80,6 +80,31 @@ function modify() {
   }
 }
 
+/**
+ * Customize Font declared in extension page
+ */
+async function customizeFont() {
+  const { fontFamily, importString } = await browser.storage.local.get();
+  if (!fontFamily)
+    return;
+
+  const styleString = `
+    ${importString}
+    code,
+    .s-prose code,
+    pre.s-code-block {
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: 0.25px;
+      font-family: '${fontFamily}', monospace;
+    }
+  `;
+
+  const style = document.createElement('style');
+  style.textContent = styleString;
+  document.head.append(style);
+}
+
 async function handleChange(changes) {
   const changedItems = Object.keys(changes);
 
@@ -92,6 +117,14 @@ async function handleChange(changes) {
 
     if (item === 'enabled') {
       location.reload();
+    }
+
+    if (item === 'fontFamily' || item === 'importString') {
+      const { enabled } = await browser.storage.local.get();
+
+      if (enabled) {
+        customizeFont();
+      }
     }
   }
 }
@@ -106,10 +139,13 @@ async function main() {
     });
 
     modify();
+    customizeFont();
   }
 
-  if (enabled)
+  if (enabled) {
     modify();
+    customizeFont();
+  }
 
   browser.storage.local.onChanged.addListener(handleChange);
 }
