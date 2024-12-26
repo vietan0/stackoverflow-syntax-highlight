@@ -25,7 +25,7 @@
 </head>
 <body class="text-white bg-zinc-800 p-4">
   <h1 class="text-xl font-bold mb-4">Customize Font</h1>
-  <form class="flex flex-col gap-3 p-4 rounded text-sm w-[600px] outline outline-1 outline-zinc-400">
+  <form class="flex flex-col gap-3 p-4 rounded-md text-sm w-[600px] outline outline-1 outline-zinc-600">
     <label class="flex flex-col gap-0.5">
       <p class="font-semibold">Font Family</p>
       <input 
@@ -46,6 +46,44 @@
       placeholder="@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap')"
       ></textarea>
     </label>
+    <div class="flex flex-col gap-1">
+      <label class="flex gap-2 items-center">
+        <p class="font-semibold">Font Size</p>
+        <input 
+          type="number" 
+          name="font-size" 
+          step="0.5"
+          min="1"
+          max="40"
+          placeholder="16"
+          class="w-20 text-white bg-zinc-700 font-roboto text-xs p-2 rounded"
+        >
+      </label>
+      <label class="flex gap-2 items-center">
+        <p class="font-semibold">Line Height</p>
+        <input 
+          type="number" 
+          name="line-height" 
+          step="0.1"
+          min="0"
+          max="2"
+          placeholder="1.5"
+          class="w-20 text-white bg-zinc-700 font-roboto text-xs p-2 rounded"
+        >
+      </label>
+      <label class="flex gap-2 items-center">
+        <p class="font-semibold">Letter Spacing</p>
+        <input 
+          type="number" 
+          name="letter-spacing" 
+          step="0.1"
+          min="-2"
+          max="2"
+          placeholder="0"
+          class="w-20 text-white bg-zinc-700 font-roboto text-xs p-2 rounded"
+        >
+      </label>
+    </div>
     <div>
       <button 
         type="submit"

@@ -84,8 +84,8 @@ function modify() {
  * Customize Font declared in extension page
  */
 async function customizeFont() {
-  const { fontFamily, importString } = await browser.storage.local.get();
-  if (!fontFamily)
+  const { fontFamily, importString, fontSize, lineHeight, letterSpacing } = await browser.storage.local.get();
+  if (!fontFamily && !fontSize && !lineHeight && !letterSpacing)
     return;
 
   const styleString = `
@@ -93,9 +93,9 @@ async function customizeFont() {
     code,
     .s-prose code,
     pre.s-code-block {
-      font-size: 13px;
-      line-height: 1.5;
-      letter-spacing: 0.25px;
+      font-size: ${fontSize}px;
+      line-height: ${lineHeight};
+      letter-spacing: ${letterSpacing}px;
       font-family: '${fontFamily}', monospace;
     }
   `;
