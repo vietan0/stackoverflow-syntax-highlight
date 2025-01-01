@@ -7,11 +7,17 @@
     "48": "icons/F7LogoStackoverflow.png"
   },
   "permissions": ["storage"],
-  "content_security_policy": "script-src 'self' https://cdn.tailwindcss.com;",
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval' https://cdn.tailwindcss.com;",
   "browser_action": {
     "default_icon": "icons/F7LogoStackoverflow.png",
     "default_title": "StackOverflow Syntax Highlight",
     "default_popup": "src/popup/index.html"
+  },
+  "background": {
+    "scripts": [
+      "src/guesslang.min.js",
+      "dist/background.js"
+    ]
   },
   "content_scripts": [
     {
@@ -19,7 +25,6 @@
         "*://*.stackoverflow.com/*"
       ],
       "js": [
-        "src/guesslang.min.js",
         "dist/content.js"
       ]
     }
