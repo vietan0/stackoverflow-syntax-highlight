@@ -7,7 +7,7 @@ async function renderBtns(themes, container) {
     btn.id = themes[i].id;
     const { theme } = await browser.storage.local.get();
     const className = `block text-xs text-start font-roboto px-2 py-1.5 border-b-[1px] border-zinc-700 hover:bg-zinc-700 active:bg-zinc-600`;
-    btn.className = `${className} ${theme === themes[i].id && 'bg-zinc-600 font-bold'}`;
+    btn.className = `${className} ${theme === themes[i].id ? 'bg-zinc-600 font-bold' : ''}`;
 
     async function handleClick() {
       const { theme } = await browser.storage.local.get();
