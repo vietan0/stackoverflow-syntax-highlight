@@ -24,7 +24,11 @@ async function notifyBackground() {
 
       for (let i = 0; i < allPre.length; i++) {
         const pre = allPre[i];
-        pre.outerHTML = highlighted[i];
+        const parser = new DOMParser();
+        const highlightedDoc = parser.parseFromString(highlighted[i], 'text/html');
+        const highlightedNode = highlightedDoc.querySelector('pre');
+        pre.insertAdjacentElement('afterend', highlightedNode);
+        pre.remove();
       }
     }
   });
