@@ -1,13 +1,14 @@
 {
   "manifest_version": 2,
   "name": "StackOverflow Syntax Highlight",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.3",
+  "homepage_url": "https://github.com/vietan0/stackoverflow-syntax-highlight",
+  "description": "Allows you to customize how StackOverflow's codeblocks look.",
   "icons": {
     "48": "icons/F7LogoStackoverflow.png"
   },
   "permissions": ["storage"],
-  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval' https://cdn.tailwindcss.com;",
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval';",
   "browser_action": {
     "default_icon": "icons/F7LogoStackoverflow.png",
     "default_title": "StackOverflow Syntax Highlight",
@@ -28,5 +29,10 @@
         "dist/content.js"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{7dcfcafd-0e28-4171-b397-c531da5b9bc4}"
+    }
+  }
 }
