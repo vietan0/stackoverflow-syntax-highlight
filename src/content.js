@@ -30,6 +30,25 @@ async function notifyBackground() {
         pre.insertAdjacentElement('afterend', highlightedNode);
         pre.remove();
       }
+
+      const allNewPre = Array.from(document.querySelectorAll('pre'));
+
+      const observer = new MutationObserver((mutationList) => {
+        for (const mutation of mutationList) {
+          if (mutation.type === 'attributes'
+            && mutation.attributeName === 'class'
+            && Array.from(mutation.target.classList).includes('s-code-block')
+          ) {
+            mutation.target.classList.remove('s-code-block');
+          }
+        }
+      });
+
+      for (const newPre of allNewPre) {
+        observer.observe(newPre, {
+          attributes: true,
+        });
+      }
     }
   });
 }
