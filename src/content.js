@@ -6,7 +6,7 @@ import customizeFont from './customizeFont.js';
 async function notifyBackground() {
   const allPre = [];
 
-  for (const pre of document.querySelectorAll('pre')) {
+  for (const pre of document.querySelectorAll('.inner-content pre')) {
     allPre.push({
       code: pre.textContent,
       classes: [...pre.classList.values()],
@@ -20,7 +20,7 @@ async function notifyBackground() {
     const { step, highlighted } = message;
 
     if (step === 2) {
-      const allPre = Array.from(document.querySelectorAll('pre'));
+      const allPre = Array.from(document.querySelectorAll('.inner-content pre'));
 
       for (let i = 0; i < allPre.length; i++) {
         const pre = allPre[i];
@@ -31,7 +31,7 @@ async function notifyBackground() {
         pre.remove();
       }
 
-      const allNewPre = Array.from(document.querySelectorAll('pre'));
+      const allNewPre = Array.from(document.querySelectorAll('.inner-content pre'));
 
       const observer = new MutationObserver((mutationList) => {
         for (const mutation of mutationList) {
