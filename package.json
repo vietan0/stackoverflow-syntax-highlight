@@ -1,7 +1,7 @@
 {
   "name": "stackoverflow-syntax-highlight",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "Allows you to customize how StackOverflow's codeblocks look.",
   "author": "",
   "license": "ISC",

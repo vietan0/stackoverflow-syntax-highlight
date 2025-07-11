@@ -50,10 +50,10 @@ async function guessAndHighlight(code) {
 
 /**
  * Receive `<pre>` elements' text and classes, highlight and return them.
- * @param {{ textContent: string, classList: string[] }[]} allPre
+ * @param {{ code: string, classes: string[] }[]} allPreInfos
  */
-async function highlightAll(allPre) {
-  const transformed = await Promise.all(allPre.map(async ({ code, classes }) => {
+async function highlightAll(allPreInfos) {
+  const transformed = await Promise.all(allPreInfos.map(async ({ code, classes }) => {
     if (classes.length === 0) {
       return guessAndHighlight(code);
     }
@@ -83,9 +83,9 @@ async function highlightAll(allPre) {
 browser.runtime.onMessage.addListener(
   (message, _sender, sendResponse) => {
     if (message.step === 1) {
-      const { allPre } = message;
+      const { allPreInfos } = message;
 
-      highlightAll(allPre).then((highlighted) => {
+      highlightAll(allPreInfos).then((highlighted) => {
         sendResponse({
           step: 2,
           highlighted,

@@ -4,10 +4,13 @@ import customizeFont from './customizeFont.js';
  * Send message to background script to start highlight codeblocks.
  */
 async function notifyBackground() {
-  const allPre = [];
+  /**
+   * @type {{ code: string, classes: string[] }[]}
+   */
+  const allPreInfos = [];
 
   for (const pre of document.querySelectorAll('.inner-content pre')) {
-    allPre.push({
+    allPreInfos.push({
       code: pre.textContent,
       classes: [...pre.classList.values()],
     });
@@ -15,7 +18,7 @@ async function notifyBackground() {
 
   browser.runtime.sendMessage({
     step: 1,
-    allPre,
+    allPreInfos,
   }).then((message) => {
     const { step, highlighted } = message;
 
@@ -25,7 +28,12 @@ async function notifyBackground() {
       for (let i = 0; i < allPre.length; i++) {
         const pre = allPre[i];
         const parser = new DOMParser();
-        const highlightedDoc = parser.parseFromString(highlighted[i], 'text/html');
+
+        const highlightedDoc = parser.parseFromString(
+          highlighted[i],
+          'text/html',
+        );
+
         const highlightedNode = highlightedDoc.querySelector('pre');
         pre.insertAdjacentElement('afterend', highlightedNode);
         pre.remove();
@@ -35,7 +43,8 @@ async function notifyBackground() {
 
       const observer = new MutationObserver((mutationList) => {
         for (const mutation of mutationList) {
-          if (mutation.type === 'attributes'
+          if (
+            mutation.type === 'attributes'
             && mutation.attributeName === 'class'
             && Array.from(mutation.target.classList).includes('s-code-block')
           ) {
