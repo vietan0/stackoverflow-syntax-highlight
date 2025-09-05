@@ -11,7 +11,7 @@ export default antfu({
   },
   rules: {
     'no-console': 'off',
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'warn',
     'unused-imports/no-unused-vars': 'warn',
     'style/padding-line-between-statements': [
@@ -49,27 +49,6 @@ export default antfu({
         next: ['singleline-const', 'singleline-let', 'singleline-var'],
       },
     ],
-    'import/order': 'off',
-    'perfectionist/sort-jsx-props': 'error',
-    'perfectionist/sort-imports': [
-      'error',
-      {
-        groups: [
-          'builtin',
-          ['external', 'internal'],
-          ['parent', 'sibling', 'index'],
-          [
-            'internal-type',
-            'type',
-            'parent-type',
-            'sibling-type',
-            'index-type',
-          ],
-          ['side-effect', 'side-effect-style'],
-        ],
-      },
-    ],
-    'test/consistent-test-it': ['error', { fn: 'test' }],
     'jsonc/sort-keys': [
       'error',
       {
