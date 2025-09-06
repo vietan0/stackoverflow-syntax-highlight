@@ -1,20 +1,24 @@
 import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { defineConfig } from 'rollup';
 
-export default [
+export default defineConfig([
   {
     input: 'src/background.js',
     output: {
       dir: 'dist',
     },
-    plugins: [resolve(), json(), commonjs()],
+    plugins: [nodeResolve({ preferBuiltins: false }), commonjs()],
+    onwarn(warning, defaultHandler) {
+      if (warning.code !== 'THIS_IS_UNDEFINED')
+        defaultHandler(warning);
+    },
   },
   {
     input: 'src/content.js',
     output: {
       file: 'dist/content.js',
     },
-    plugins: [resolve(), json(), commonjs()],
+    plugins: [nodeResolve(), commonjs()],
   },
-];
+]);

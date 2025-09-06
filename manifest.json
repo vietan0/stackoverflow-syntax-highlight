@@ -8,7 +8,6 @@
     "48": "icons/F7LogoStackoverflow.png"
   },
   "permissions": ["storage"],
-  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval';",
   "browser_action": {
     "default_icon": "icons/F7LogoStackoverflow.png",
     "default_title": "StackOverflow Syntax Highlight",
@@ -16,7 +15,6 @@
   },
   "background": {
     "scripts": [
-      "src/guesslang.min.js",
       "dist/background.js"
     ]
   },
@@ -24,6 +22,9 @@
     {
       "matches": [
         "*://*.stackoverflow.com/*"
+      ],
+      "css": [
+        "src/content.css"
       ],
       "js": [
         "dist/content.js"

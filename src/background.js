@@ -1,16 +1,25 @@
+import { Magika } from 'magika';
 import { bundledLanguages, codeToHtml } from 'shiki';
+
+async function guess(code) {
+  const file = new File([code], 'fileName');
+  const fileBytes = new Uint8Array(await file.arrayBuffer());
+  const magika = await Magika.create();
+  const magikaResult = await magika.identifyBytes(fileBytes);
+
+  if (magikaResult.status !== 'ok') {
+    throw new Error(magikaResult.status);
+  }
+
+  return magikaResult.prediction.output.label;
+}
 
 /**
  * Turn a code snippet into a syntax-highlighted HTML string.
  * @param {string} code The code snippet
  * @param {string} lang The language (specified or guessed) of the code
- * @returns {string} A highlighted HTML string
  */
 async function highlight(code, lang) {
-  if (!(lang in bundledLanguages)) {
-    console.log(`Shiki doesn't recognize: ${lang}, fallback to 'plain'`);
-  }
-
   const { theme } = await browser.storage.local.get();
 
   if (!theme) {
@@ -20,29 +29,24 @@ async function highlight(code, lang) {
     });
   }
 
+  const shikiApprovedLang = lang in bundledLanguages ? lang : 'plain';
+
   const html = await codeToHtml(code, {
-    lang: lang in bundledLanguages ? lang : 'plain',
+    lang: shikiApprovedLang,
     theme: theme || 'dark-plus',
+    transformers: [{
+      code(hast) {
+        if (shikiApprovedLang === 'plain')
+          this.addClassToHast(hast, 'plain');
+      },
+    }],
   });
 
   return html;
 }
 
-/**
- * If it has a guess, pass that guess to `highlight()` and return highlighted HTML string.
- *
- * If there's no guess, return `undefined`.
- * @param {HTMLElement} code The code snippet
- * @returns {string | undefined} Highlighted HTML string if guessed, `undefined` if not
- */
 async function guessAndHighlight(code) {
-  // eslint-disable-next-line no-undef
-  const guessLang = new GuessLang();
-  const guesses = await guessLang.runModel(code);
-  if (guesses.length === 0)
-    return;
-
-  const guessedLang = guesses[0].languageId;
+  const guessedLang = await guess(code);
   const highlighted = await highlight(code, guessedLang);
 
   return highlighted;
@@ -67,12 +71,7 @@ async function highlightAll(allPreInfos) {
         const regex = /(?<=lang-)[\w-]+/g; // find js, cpp, html in lang-js, lang-cpp, lang-html
         const [lang] = langClass.match(regex);
 
-        if (lang === 'none') {
-          return guessAndHighlight(code);
-        }
-        else {
-          return highlight(code, lang);
-        }
+        return lang === 'none' ? guessAndHighlight(code) : highlight(code, lang);
       }
     }
   }));
@@ -86,10 +85,7 @@ browser.runtime.onMessage.addListener(
       const { allPreInfos } = message;
 
       highlightAll(allPreInfos).then((highlighted) => {
-        sendResponse({
-          step: 2,
-          highlighted,
-        });
+        sendResponse({ step: 2, highlighted });
       });
     }
 
