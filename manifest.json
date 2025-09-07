@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "StackOverflow Syntax Highlight",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "homepage_url": "https://github.com/vietan0/stackoverflow-syntax-highlight",
   "description": "Allows you to customize how StackOverflow's codeblocks look.",
   "icons": {
