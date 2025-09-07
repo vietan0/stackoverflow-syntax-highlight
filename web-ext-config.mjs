@@ -13,4 +13,15 @@ export default {
     apiKey: process.env.WEB_EXT_API_KEY,
     apiSecret: process.env.WEB_EXT_API_SECRET,
   },
+  ignoreFiles: [
+    'src/content.js',
+    'src/customizeFont.js',
+    'src/background.js',
+    '**/*.js.map',
+    '**/*.md',
+    '**/*config.{?(m|c)js,ts}',
+    '**/!(manifest).json',
+    'screenshots',
+    'pnpm-lock.yaml',
+  ],
 };

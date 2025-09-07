@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 import { defineConfig } from 'rollup';
 
 export default defineConfig([
@@ -8,7 +9,7 @@ export default defineConfig([
     output: {
       dir: 'dist',
     },
-    plugins: [nodeResolve({ preferBuiltins: false }), commonjs()],
+    plugins: [nodeResolve({ preferBuiltins: false }), commonjs(), terser()],
     onwarn(warning, defaultHandler) {
       if (warning.code !== 'THIS_IS_UNDEFINED')
         defaultHandler(warning);
@@ -19,6 +20,6 @@ export default defineConfig([
     output: {
       file: 'dist/content.js',
     },
-    plugins: [nodeResolve(), commonjs()],
+    plugins: [nodeResolve(), commonjs(), terser()],
   },
 ]);
