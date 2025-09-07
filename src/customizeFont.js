@@ -15,9 +15,7 @@ export default async function customizeFont() {
 
   const styleString = `
     ${importString}
-    code,
-    .s-prose code,
-    pre.s-code-block {
+    .s-prose code {
       font-size: ${fontSize}px;
       line-height: ${lineHeight};
       letter-spacing: ${letterSpacing}px;
@@ -25,7 +23,14 @@ export default async function customizeFont() {
     }
   `;
 
+  const styleClass = 'stackoverflow-syntax-highlight';
+
+  for (const elem of document.getElementsByClassName(styleClass)) {
+    elem.remove();
+  }
+
   const style = document.createElement('style');
+  style.className = styleClass;
   style.textContent = styleString;
   document.head.append(style);
 }
