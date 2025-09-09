@@ -15,6 +15,7 @@ export default async function customizeFont() {
 
   const styleString = `
     ${importString}
+    code,
     .s-prose code {
       font-size: ${fontSize}px;
       line-height: ${lineHeight};
