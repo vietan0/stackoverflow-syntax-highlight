@@ -5,6 +5,6 @@
   - rendering dark text on dark background/light text on light background.
   - This prevents that.
  */
-pre.shiki code.plain {
+pre.shiki.lang-plain > code {
   color: inherit !important;
 }

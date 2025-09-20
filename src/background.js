@@ -35,9 +35,8 @@ async function highlight(code, lang) {
     lang: shikiApprovedLang,
     theme: theme || 'dark-plus',
     transformers: [{
-      code(hast) {
-        if (shikiApprovedLang === 'plain')
-          this.addClassToHast(hast, 'plain');
+      pre(hast) {
+        this.addClassToHast(hast, `lang-${shikiApprovedLang}`);
       },
     }],
   });
