@@ -101,15 +101,6 @@ async function notifyBackground() {
 async function main() {
   const { enabled } = await browser.storage.local.get();
 
-  if (enabled === undefined) {
-    // first time, should always be boolean
-    await browser.storage.local.set({
-      enabled: true,
-    });
-
-    main();
-  }
-
   if (enabled) {
     customizeFont();
     const innerContent = document.querySelector('.inner-content');
@@ -132,25 +123,25 @@ async function main() {
 
 async function handleStoreChange(changes) {
   const changedItems = Object.keys(changes);
+  const { enabled } = await browser.storage.local.get();
 
-  for (const item of changedItems) {
-    if (item === 'theme') {
-      const { enabled } = await browser.storage.local.get();
-      if (enabled)
-        notifyBackground();
-    }
+  if (changedItems.length === 1) {
+    const [item] = changedItems;
 
     if (item === 'enabled') {
       location.reload();
     }
 
-    if (item === 'fontFamily' || item === 'importString') {
-      const { enabled } = await browser.storage.local.get();
-
-      if (enabled) {
-        customizeFont();
-      }
+    if (item === 'theme') {
+      if (enabled)
+        notifyBackground();
     }
+  }
+
+  else {
+    // changedItems.length > 1 means font styles were changed
+    if (enabled)
+      customizeFont();
   }
 }
 

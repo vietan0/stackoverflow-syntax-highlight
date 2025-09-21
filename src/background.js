@@ -1,6 +1,33 @@
 import { Magika } from 'magika';
 import { bundledLanguages, codeToHtml } from 'shiki';
 
+const initialStorage = {
+  enabled: true,
+  theme: 'dark-plus',
+  fontFamily: '',
+  importString: '',
+  fontSize: '',
+  lineHeight: '',
+  letterSpacing: '',
+};
+
+browser.runtime.onInstalled.addListener(async (details) => {
+  if (details.reason === 'install') {
+    await browser.storage.local.set(initialStorage);
+  }
+  else if (details.reason === 'update') {
+    const storage = await browser.storage.local.get();
+    const currentKeys = Object.keys(storage);
+    const initialKeys = Object.keys(initialStorage);
+
+    for (const key of initialKeys) {
+      if (!currentKeys.includes(key)) {
+        browser.storage.local.set({ [key]: initialStorage[key] });
+      }
+    }
+  }
+});
+
 async function guess(code) {
   const file = new File([code], 'fileName');
   const fileBytes = new Uint8Array(await file.arrayBuffer());
@@ -21,14 +48,6 @@ async function guess(code) {
  */
 async function highlight(code, lang) {
   const { theme } = await browser.storage.local.get();
-
-  if (!theme) {
-    // if undefined (first time), set to dark-plus
-    await browser.storage.local.set({
-      theme: 'dark-plus',
-    });
-  }
-
   const shikiApprovedLang = lang in bundledLanguages ? lang : 'text';
 
   const html = await codeToHtml(code, {
