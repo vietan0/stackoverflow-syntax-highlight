@@ -1,10 +1,10 @@
 /* 
-  - When rendered language is 'plain',
+  - When rendered language is 'text',
   - If chosen theme is dark and StackOverflow's theme is light (or vice versa),
   - StackOverflow's color rule takes precedence over shiki's color rule,
   - rendering dark text on dark background/light text on light background.
   - This prevents that.
  */
-pre.shiki.lang-plain > code {
+pre.shiki.lang-text > code {
   color: inherit !important;
 }

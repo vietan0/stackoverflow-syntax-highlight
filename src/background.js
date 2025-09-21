@@ -29,7 +29,7 @@ async function highlight(code, lang) {
     });
   }
 
-  const shikiApprovedLang = lang in bundledLanguages ? lang : 'plain';
+  const shikiApprovedLang = lang in bundledLanguages ? lang : 'text';
 
   const html = await codeToHtml(code, {
     lang: shikiApprovedLang,
