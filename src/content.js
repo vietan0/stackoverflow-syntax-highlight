@@ -1,9 +1,22 @@
 import customizeFont from './customizeFont.js';
 
 /**
+ * Observe `pre`s until one has its `className` loaded,
+ * at which point call `notifyBackground()` which will stop observing all.
+ */
+const classObserver = new MutationObserver((mutations) => {
+  if (mutations.some(mutation =>
+    mutation.oldValue === null && mutation.target.classList.contains('s-code-block'),
+  )) {
+    notifyBackground();
+  }
+});
+
+/**
  * Send message to background script to start highlight codeblocks.
  */
 async function notifyBackground() {
+  classObserver.disconnect();
   /**
    * @type {{ code: string, classes: string[] }[]}
    */
@@ -75,8 +88,17 @@ async function main() {
   }
 
   if (enabled) {
-    notifyBackground();
     customizeFont();
+
+    for (const pre of document.querySelectorAll('.inner-content pre')) {
+      if (pre.classList.length === 0) {
+        classObserver.observe(pre, { attributeFilter: ['class'], attributeOldValue: true });
+      }
+      else {
+        notifyBackground();
+        break;
+      }
+    }
   }
 }
 
