@@ -57,22 +57,15 @@ async function guessAndHighlight(code) {
  */
 async function highlightAll(allPreInfos) {
   const transformed = await Promise.all(allPreInfos.map(async ({ code, classes }) => {
-    if (classes.length === 0) {
+    const langClass = classes.find(className => className.startsWith('lang-'));
+
+    if (!langClass)
       return guessAndHighlight(code);
-    }
-    else {
-      const langClass = classes.find(className => className.startsWith('lang-'));
 
-      if (!langClass) {
-        return guessAndHighlight(code);
-      }
-      else {
-        const regex = /(?<=lang-)[\w-]+/g; // find js, cpp, html in lang-js, lang-cpp, lang-html
-        const [lang] = langClass.match(regex);
+    const regex = /(?<=lang-)[\w-]+/g; // find js, cpp in lang-js, lang-cpp
+    const [lang] = langClass.match(regex);
 
-        return lang === 'none' ? guessAndHighlight(code) : highlight(code, lang);
-      }
-    }
+    return lang === 'none' ? guessAndHighlight(code) : highlight(code, lang);
   }));
 
   return transformed;
