@@ -2,6 +2,26 @@ import customizeFont from './customizeFont.js';
 
 const preSelector = '.inner-content pre:not(.markdown)';
 
+/**
+ * Observes for new `pre`s added to the DOM
+ * (e.g. you post an answer that has a code block),
+ * at which point calls `notifyBackground()`.
+ * Never disconnects.
+ */
+const preObserver = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    const addedPre = [...mutation.addedNodes].find(node => node.nodeName === 'PRE');
+
+    if (addedPre) {
+      if (addedPre.classList.contains('s-code-block')
+        && !addedPre.classList.contains('markdown')
+      ) {
+        notifyBackground();
+        break;
+      }
+    }
+  }
+});
 
 /**
  * Observe `pre`s until one has its `className` loaded,
@@ -92,6 +112,11 @@ async function main() {
 
   if (enabled) {
     customizeFont();
+    const innerContent = document.querySelector('.inner-content');
+
+    if (innerContent) {
+      preObserver.observe(innerContent, { childList: true, subtree: true });
+    }
 
     for (const pre of document.querySelectorAll(preSelector)) {
       if (pre.classList.length === 0) {
