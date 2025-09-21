@@ -1,5 +1,8 @@
 import customizeFont from './customizeFont.js';
 
+const preSelector = '.inner-content pre:not(.markdown)';
+
+
 /**
  * Observe `pre`s until one has its `className` loaded,
  * at which point call `notifyBackground()` which will stop observing all.
@@ -22,7 +25,7 @@ async function notifyBackground() {
    */
   const allPreInfos = [];
 
-  for (const pre of document.querySelectorAll('.inner-content pre')) {
+  for (const pre of document.querySelectorAll(preSelector)) {
     allPreInfos.push({
       code: pre.textContent,
       classes: [...pre.classList.values()],
@@ -36,7 +39,7 @@ async function notifyBackground() {
     const { step, highlighted } = message;
 
     if (step === 2) {
-      const allPre = Array.from(document.querySelectorAll('.inner-content pre'));
+      const allPre = Array.from(document.querySelectorAll(preSelector));
 
       for (let i = 0; i < allPre.length; i++) {
         const pre = allPre[i];
@@ -52,7 +55,7 @@ async function notifyBackground() {
         pre.remove();
       }
 
-      const allNewPre = Array.from(document.querySelectorAll('.inner-content pre'));
+      const allNewPre = Array.from(document.querySelectorAll(preSelector));
 
       const observer = new MutationObserver((mutationList) => {
         for (const mutation of mutationList) {
@@ -90,7 +93,7 @@ async function main() {
   if (enabled) {
     customizeFont();
 
-    for (const pre of document.querySelectorAll('.inner-content pre')) {
+    for (const pre of document.querySelectorAll(preSelector)) {
       if (pre.classList.length === 0) {
         classObserver.observe(pre, { attributeFilter: ['class'], attributeOldValue: true });
       }
