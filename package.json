@@ -7,20 +7,17 @@
   "license": "ISC",
   "keywords": [],
   "scripts": {
-    "build": "web-ext build",
+    "build": "rolldown -c",
     "dev": "web-ext run --devtools",
+    "ext-build": "web-ext build",
     "lint": "eslint .",
-    "rollup-build": "rollup --config",
-    "rollup-watch": "rollup --config -w",
-    "sign": "web-ext sign"
+    "sign": "web-ext sign",
+    "watch": "rolldown -wc"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.2.2",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-terser": "^0.4.4",
     "eslint": "^9.35.0",
-    "rollup": "^4.50.0",
+    "rolldown": "1.0.0-beta.41",
     "web-ext": "^8.9.0"
   },
   "dependencies": {
