@@ -5,7 +5,11 @@ dotenv.config();
 
 export default {
   run: {
-    startUrl: ['https://stackoverflow.com/questions/79756656'],
+    startUrl: [
+      'https://stackoverflow.com/questions/79756656', // default s-code-block
+      'https://stackoverflow.com/questions/79782075', // no lang specified
+      'https://stackoverflow.com/questions/38916344', // guessed lang (if slow connection) different from specified lang
+    ],
     firefoxProfile: 'ext-dev',
   },
   sign: {

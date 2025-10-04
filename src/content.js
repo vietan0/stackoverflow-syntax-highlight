@@ -1,6 +1,7 @@
 import customizeFont from './customizeFont.js';
 
 const preSelector = '.inner-content pre:not(.markdown)';
+const codeSelector = `${preSelector} > code`;
 
 /**
  * Observes for new `pre`s added to the DOM
@@ -8,7 +9,7 @@ const preSelector = '.inner-content pre:not(.markdown)';
  * at which point calls `notifyBackground()`.
  * Never disconnects.
  */
-const preObserver = new MutationObserver((mutations) => {
+const addedPreObserver = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     const addedPre = [...mutation.addedNodes].find(node => node.nodeName === 'PRE');
 
@@ -24,45 +25,63 @@ const preObserver = new MutationObserver((mutations) => {
 });
 
 /**
- * Observe `pre`s until one has its `className` loaded,
+ * Observe `code`s until one has `hljs` class loaded,
  * at which point call `notifyBackground()` which will stop observing all.
  */
-const classObserver = new MutationObserver((mutations) => {
+const codeClassObserver = new MutationObserver((mutations) => {
   if (mutations.some(mutation =>
-    mutation.oldValue === null && mutation.target.classList.contains('s-code-block'),
+    mutation.oldValue === null && mutation.target.classList.contains('hljs'),
   )) {
     notifyBackground();
   }
 });
 
 /**
+ * @param {string[]} classes e.g. `[]`, `["hljs", "language-bash"]`, `["hljs", "language-php-template"]`
+ * @returns {string | null} found language or `null`
+ */
+function getLangFromClasses(classes) {
+  const langClass = classes.find(className => className.startsWith('language-'));
+  if (!langClass)
+    return null;
+
+  const regex = /(?<=language-)[\w-]+/g;
+  const lang = langClass.match(regex)[0];
+
+  return lang;
+}
+
+/**
  * Send message to background script to start highlight codeblocks.
  */
 async function notifyBackground() {
-  classObserver.disconnect();
+  codeClassObserver.disconnect();
   /**
-   * @type {{ code: string, classes: string[] }[]}
+   * @type {{ code: string, lang: string | null }[]}
    */
   const allPreInfos = [];
 
-  for (const pre of document.querySelectorAll(preSelector)) {
+  for (const codeElem of document.querySelectorAll(codeSelector)) {
+    const classes = [...codeElem.classList.values()];
+
     allPreInfos.push({
-      code: pre.textContent,
-      classes: [...pre.classList.values()],
+      code: codeElem.textContent,
+      lang: getLangFromClasses(classes),
     });
   }
 
   browser.runtime.sendMessage({
     step: 1,
     allPreInfos,
-  }).then((message) => {
+  }).then(async (message) => {
     const { step, highlighted } = message;
 
     if (step === 2) {
-      const allPre = Array.from(document.querySelectorAll(preSelector));
+      const { theme } = await browser.storage.local.get();
+      const defaultPres = Array.from(document.querySelectorAll(preSelector));
 
-      for (let i = 0; i < allPre.length; i++) {
-        const pre = allPre[i];
+      for (let i = 0; i < defaultPres.length; i++) {
+        const pre = defaultPres[i];
         const parser = new DOMParser();
 
         const highlightedDoc = parser.parseFromString(
@@ -75,24 +94,25 @@ async function notifyBackground() {
         pre.remove();
       }
 
-      const allNewPre = Array.from(document.querySelectorAll(preSelector));
+      const shikiPres = Array.from(document.querySelectorAll(preSelector));
 
-      const observer = new MutationObserver((mutationList) => {
+      /*
+        Look for classes added by StackOverflow after Shiki,
+        remove them to avoid potential style conflicts.
+       */
+      const shikiPreClassObserver = new MutationObserver((mutationList) => {
         for (const mutation of mutationList) {
-          if (
-            mutation.type === 'attributes'
-            && mutation.attributeName === 'class'
-            && Array.from(mutation.target.classList).includes('s-code-block')
-          ) {
-            mutation.target.classList.remove('s-code-block');
+          if (Array.from(mutation.target.classList).includes('s-code-block')) {
+            for (const className of mutation.target.classList.values()) {
+              if (className !== 'shiki' && className !== theme)
+                mutation.target.classList.remove(className);
+            }
           }
         }
       });
 
-      for (const newPre of allNewPre) {
-        observer.observe(newPre, {
-          attributes: true,
-        });
+      for (const shikiPre of shikiPres) {
+        shikiPreClassObserver.observe(shikiPre, { attributeFilter: ['class'] });
       }
     }
   });
@@ -106,12 +126,19 @@ async function main() {
     const innerContent = document.querySelector('.inner-content');
 
     if (innerContent) {
-      preObserver.observe(innerContent, { childList: true, subtree: true });
+      addedPreObserver.observe(innerContent, { childList: true, subtree: true });
     }
 
-    for (const pre of document.querySelectorAll(preSelector)) {
-      if (pre.classList.length === 0) {
-        classObserver.observe(pre, { attributeFilter: ['class'], attributeOldValue: true });
+    for (const codeElem of document.querySelectorAll(codeSelector)) {
+      if (codeElem.classList.length === 0) {
+        // 1. class is loading or 2. there's no language specified
+        // Wait for 2s, if there's no classes by then, notifyBackground() anyway
+        codeClassObserver.observe(codeElem, { attributeFilter: ['class'], attributeOldValue: true });
+
+        setTimeout(() => {
+          if (codeElem.classList.length === 0)
+            notifyBackground();
+        }, 2000);
       }
       else {
         notifyBackground();

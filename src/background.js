@@ -54,8 +54,8 @@ async function highlight(code, lang) {
     lang: shikiApprovedLang,
     theme: theme || 'dark-plus',
     transformers: [{
-      pre(hast) {
-        this.addClassToHast(hast, `lang-${shikiApprovedLang}`);
+      code(hast) {
+        this.addClassToHast(hast, `language-${shikiApprovedLang}`);
       },
     }],
   });
@@ -71,20 +71,11 @@ async function guessAndHighlight(code) {
 }
 
 /**
- * Receive `<pre>` elements' text and classes, highlight and return them.
- * @param {{ code: string, classes: string[] }[]} allPreInfos
+ * @param {{ code: string, lang: string | null }[]} allPreInfos
  */
 async function highlightAll(allPreInfos) {
-  const transformed = await Promise.all(allPreInfos.map(async ({ code, classes }) => {
-    const langClass = classes.find(className => className.startsWith('lang-'));
-
-    if (!langClass)
-      return guessAndHighlight(code);
-
-    const regex = /(?<=lang-)[\w-]+/g; // find js, cpp in lang-js, lang-cpp
-    const [lang] = langClass.match(regex);
-
-    return lang === 'none' ? guessAndHighlight(code) : highlight(code, lang);
+  const transformed = await Promise.all(allPreInfos.map(async ({ code, lang }) => {
+    return lang === null || lang === 'none' ? guessAndHighlight(code) : highlight(code, lang);
   }));
 
   return transformed;
