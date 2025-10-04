@@ -1,8 +1,18 @@
 # StackOverflow Syntax Highlight
 
 Allows you to customize how StackOverflow's codeblocks look.
-
-[<img src="https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png" alt="">](https://addons.mozilla.org/en-US/firefox/addon/stackoverflow-syntax-highlight/)
+<div >
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/stackoverflow-syntax-highlight/">
+    <img src="https://img.shields.io/amo/v/%7B7dcfcafd-0e28-4171-b397-c531da5b9bc4%7D?logo=firefoxbrowser&logoColor=white&label=Firefox" alt="Firefox Addons Link" />
+  </a>
+</div>
+<div>
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/stackoverflow-syntax-highlight/">
+    <picture>
+      <source srcset="https://i.imgur.com/ZluoP7T.png" media="(prefers-color-scheme: dark)">
+    <img height="58" src="https://i.imgur.com/4PobQqE.png" alt="Firefox Addons"></picture>
+  </a>
+</div>
 
 ## Screenshots
 

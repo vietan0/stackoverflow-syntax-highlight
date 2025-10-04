@@ -4,7 +4,7 @@
   "version": "1.1.0",
   "description": "Allows you to customize how StackOverflow's codeblocks look.",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "keywords": [],
   "scripts": {
     "build": "rolldown -c",
